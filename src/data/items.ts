@@ -202,14 +202,6 @@ export const categories: Category[] = [
         imageUrl:
           "https://www.ikea.com/ca/en/images/products/frakta-storage-bag-blue__0711261_pe728099_s5.jpg",
       },
-      {
-        id: "alganas",
-        name: "ÄLGANÄS Hat and coat stand - black",
-        url: "https://www.ikea.com/ca/en/p/aelganaes-hat-and-coat-stand-black-90585894/",
-        price: 34.99,
-        imageUrl:
-          "https://www.ikea.com/ca/en/images/products/aelganaes-hat-and-coat-stand-black__1358349_pe953846_s5.jpg",
-      },
     ],
   },
   {
@@ -232,6 +224,14 @@ export const categories: Category[] = [
         price: 79.99,
         imageUrl:
           "https://www.ikea.com/ca/en/images/products/mackapaer-coat-rack-with-shoe-storage-unit-white__1094141_pe863318_s5.jpg",
+      },
+      {
+        id: "alganas",
+        name: "ÄLGANÄS Hat and coat stand - black",
+        url: "https://www.ikea.com/ca/en/p/aelganaes-hat-and-coat-stand-black-90585894/",
+        price: 34.99,
+        imageUrl:
+          "https://www.ikea.com/ca/en/images/products/aelganaes-hat-and-coat-stand-black__1358349_pe953846_s5.jpg",
       },
     ],
   },
