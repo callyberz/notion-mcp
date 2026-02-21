@@ -1,32 +1,45 @@
 import { useState, useCallback } from "react";
 
-const STORAGE_KEY = "ikea-wishlist-purchased";
+export type ItemStatus = "shortlisted" | "purchased";
 
-function loadPurchased(): Set<string> {
+const STORAGE_KEY = "ikea-wishlist-purchased";
+const STORAGE_KEY_V2 = "ikea-wishlist-item-status";
+
+function loadStatuses(): Map<string, ItemStatus> {
   try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) return new Set(JSON.parse(stored));
+    const v2 = localStorage.getItem(STORAGE_KEY_V2);
+    if (v2) return new Map(JSON.parse(v2));
+
+    // Migrate v1 (Set of purchased IDs) → v2
+    const v1 = localStorage.getItem(STORAGE_KEY);
+    if (v1) {
+      const ids: string[] = JSON.parse(v1);
+      const map = new Map<string, ItemStatus>(ids.map((id) => [id, "purchased"]));
+      localStorage.setItem(STORAGE_KEY_V2, JSON.stringify([...map]));
+      localStorage.removeItem(STORAGE_KEY);
+      return map;
+    }
   } catch {
     // ignore corrupt data
   }
-  return new Set();
+  return new Map();
 }
 
 export function usePurchaseState() {
-  const [purchased, setPurchased] = useState<Set<string>>(loadPurchased);
+  const [statuses, setStatuses] = useState<Map<string, ItemStatus>>(loadStatuses);
 
-  const togglePurchased = useCallback((itemId: string) => {
-    setPurchased((prev) => {
-      const next = new Set(prev);
-      if (next.has(itemId)) {
+  const setStatus = useCallback((itemId: string, status: ItemStatus | null) => {
+    setStatuses((prev) => {
+      const next = new Map(prev);
+      if (status === null || next.get(itemId) === status) {
         next.delete(itemId);
       } else {
-        next.add(itemId);
+        next.set(itemId, status);
       }
-      localStorage.setItem(STORAGE_KEY, JSON.stringify([...next]));
+      localStorage.setItem(STORAGE_KEY_V2, JSON.stringify([...next]));
       return next;
     });
   }, []);
 
-  return { purchased, togglePurchased };
+  return { statuses, setStatus };
 }

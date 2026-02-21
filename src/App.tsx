@@ -1,15 +1,25 @@
 import { useState, useMemo } from "react";
-import { categories } from "@/data/items";
 import { usePurchaseState } from "@/hooks/usePurchaseState";
+import { useCustomItems } from "@/hooks/useCustomItems";
 import { BudgetSummary } from "@/components/BudgetSummary";
 import { CategoryCard } from "@/components/CategoryCard";
+import { AddItemDialog } from "@/components/AddItemDialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Toaster } from "@/components/ui/sonner";
 
-type Filter = "all" | "to-buy" | "purchased";
+type Filter = "all" | "to-buy" | "shortlisted" | "purchased";
+
+const filterLabels: Record<Filter, string> = {
+  all: "All",
+  "to-buy": "To Buy",
+  shortlisted: "Shortlisted",
+  purchased: "Purchased",
+};
 
 function App() {
-  const { purchased, togglePurchased } = usePurchaseState();
+  const { statuses, setStatus } = usePurchaseState();
+  const { categories, addItem } = useCustomItems();
   const [filter, setFilter] = useState<Filter>("all");
   const [search, setSearch] = useState("");
 
@@ -22,17 +32,19 @@ function App() {
             item.name.toLowerCase().includes(search.toLowerCase()) ||
             cat.name.toLowerCase().includes(search.toLowerCase());
 
+          const status = statuses.get(item.id);
           const matchesFilter =
             filter === "all" ||
-            (filter === "purchased" && purchased.has(item.id)) ||
-            (filter === "to-buy" && !purchased.has(item.id));
+            (filter === "purchased" && status === "purchased") ||
+            (filter === "shortlisted" && status === "shortlisted") ||
+            (filter === "to-buy" && !status);
 
           return matchesSearch && matchesFilter;
         });
         return { ...cat, items: filteredItems };
       })
       .filter((cat) => cat.items.length > 0);
-  }, [filter, search, purchased]);
+  }, [categories, filter, search, statuses]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -47,19 +59,19 @@ function App() {
         </header>
 
         <div className="mb-6">
-          <BudgetSummary purchased={purchased} />
+          <BudgetSummary categories={categories} statuses={statuses} />
         </div>
 
         <div className="flex flex-wrap items-center gap-3 mb-6">
           <div className="flex gap-1">
-            {(["all", "to-buy", "purchased"] as Filter[]).map((f) => (
+            {(Object.keys(filterLabels) as Filter[]).map((f) => (
               <Button
                 key={f}
                 variant={filter === f ? "default" : "outline"}
                 size="sm"
                 onClick={() => setFilter(f)}
               >
-                {f === "all" ? "All" : f === "to-buy" ? "To Buy" : "Purchased"}
+                {filterLabels[f]}
               </Button>
             ))}
           </div>
@@ -69,6 +81,7 @@ function App() {
             onChange={(e) => setSearch(e.target.value)}
             className="max-w-xs"
           />
+          <AddItemDialog categories={categories} onAdd={addItem} />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -76,8 +89,8 @@ function App() {
             <CategoryCard
               key={category.id}
               category={category}
-              purchased={purchased}
-              onToggle={togglePurchased}
+              statuses={statuses}
+              onSetStatus={setStatus}
             />
           ))}
         </div>
@@ -88,6 +101,7 @@ function App() {
           </div>
         )}
       </div>
+      <Toaster position="bottom-right" />
     </div>
   );
 }
