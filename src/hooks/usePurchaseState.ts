@@ -14,7 +14,9 @@ function loadStatuses(): Map<string, ItemStatus> {
     const v1 = localStorage.getItem(STORAGE_KEY);
     if (v1) {
       const ids: string[] = JSON.parse(v1);
-      const map = new Map<string, ItemStatus>(ids.map((id) => [id, "purchased"]));
+      const map = new Map<string, ItemStatus>(
+        ids.map((id) => [id, "purchased"]),
+      );
       localStorage.setItem(STORAGE_KEY_V2, JSON.stringify([...map]));
       localStorage.removeItem(STORAGE_KEY);
       return map;
@@ -26,7 +28,8 @@ function loadStatuses(): Map<string, ItemStatus> {
 }
 
 export function usePurchaseState() {
-  const [statuses, setStatuses] = useState<Map<string, ItemStatus>>(loadStatuses);
+  const [statuses, setStatuses] =
+    useState<Map<string, ItemStatus>>(loadStatuses);
 
   const setStatus = useCallback((itemId: string, status: ItemStatus | null) => {
     setStatuses((prev) => {
@@ -41,5 +44,10 @@ export function usePurchaseState() {
     });
   }, []);
 
-  return { statuses, setStatus };
+  const resetStatuses = useCallback(() => {
+    localStorage.removeItem(STORAGE_KEY_V2);
+    setStatuses(new Map());
+  }, []);
+
+  return { statuses, setStatus, resetStatuses };
 }

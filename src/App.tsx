@@ -18,8 +18,9 @@ const filterLabels: Record<Filter, string> = {
 };
 
 function App() {
-  const { statuses, setStatus } = usePurchaseState();
+  const { statuses, setStatus, resetStatuses } = usePurchaseState();
   const { categories, addItem } = useCustomItems();
+  const [budget, setBudget] = useState(2000);
   const [filter, setFilter] = useState<Filter>("all");
   const [search, setSearch] = useState("");
 
@@ -59,7 +60,7 @@ function App() {
         </header>
 
         <div className="mb-6">
-          <BudgetSummary categories={categories} statuses={statuses} />
+          <BudgetSummary categories={categories} statuses={statuses} budget={budget} onBudgetChange={setBudget} />
         </div>
 
         <div className="flex flex-wrap items-center gap-3 mb-6">
@@ -82,6 +83,16 @@ function App() {
             className="max-w-xs"
           />
           <AddItemDialog categories={categories} onAdd={addItem} />
+          {statuses.size > 0 && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="text-red-600 border-red-200 hover:bg-red-50"
+              onClick={resetStatuses}
+            >
+              Reset All
+            </Button>
+          )}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
