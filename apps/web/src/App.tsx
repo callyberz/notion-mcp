@@ -1,4 +1,5 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import type { ItemStatus } from "@wishlist/shared";
 import { usePurchaseState } from "@/hooks/usePurchaseState";
 import { useCustomItems } from "@/hooks/useCustomItems";
 import { BudgetSummary } from "@/components/BudgetSummary";
@@ -7,6 +8,7 @@ import { AddItemDialog } from "@/components/AddItemDialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Toaster } from "@/components/ui/sonner";
+import { api } from "@/lib/api";
 
 type Filter = "all" | "to-buy" | "shortlisted" | "purchased";
 
@@ -18,11 +20,51 @@ const filterLabels: Record<Filter, string> = {
 };
 
 function App() {
-  const { statuses, setStatus, resetStatuses } = usePurchaseState();
-  const { categories, addItem } = useCustomItems();
+  const { statuses, setStatus, resetStatuses, initFromApi } =
+    usePurchaseState();
+  const { categories, setCategories, addItem } = useCustomItems([]);
   const [budget, setBudget] = useState(2000);
   const [filter, setFilter] = useState<Filter>("all");
   const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    api
+      .getCategories()
+      .then((data) => {
+        const cats = data.map((c) => ({
+          id: c.id,
+          name: c.name,
+          icon: c.icon,
+          purchaseDeadline: c.purchaseDeadline,
+          items: c.items.map((item) => ({
+            id: item.id,
+            name: item.name,
+            url: item.url,
+            price: item.price,
+            imageUrl: item.imageUrl,
+            isPreferred: item.isPreferred,
+            notes: item.notes,
+          })),
+        }));
+        setCategories(cats);
+
+        const statusMap = new Map<string, ItemStatus>();
+        for (const c of data) {
+          for (const item of c.items) {
+            if (item.status === "shortlisted" || item.status === "purchased") {
+              statusMap.set(item.id, item.status);
+            }
+          }
+        }
+        initFromApi(statusMap);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Failed to load data:", err);
+        setLoading(false);
+      });
+  }, []);
 
   const filteredCategories = useMemo(() => {
     return categories
@@ -47,6 +89,14 @@ function App() {
       .filter((cat) => cat.items.length > 0);
   }, [categories, filter, search, statuses]);
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <p className="text-muted-foreground">Loading...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <div className="mx-auto max-w-6xl px-4 py-8">
@@ -60,7 +110,12 @@ function App() {
         </header>
 
         <div className="mb-6">
-          <BudgetSummary categories={categories} statuses={statuses} budget={budget} onBudgetChange={setBudget} />
+          <BudgetSummary
+            categories={categories}
+            statuses={statuses}
+            budget={budget}
+            onBudgetChange={setBudget}
+          />
         </div>
 
         <div className="flex flex-wrap items-center gap-3 mb-6">
