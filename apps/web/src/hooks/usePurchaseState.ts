@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
+import type { ItemStatus } from "@wishlist/shared";
 
-export type ItemStatus = "shortlisted" | "purchased";
+export type { ItemStatus };
 
 const STORAGE_KEY = "ikea-wishlist-purchased";
 const STORAGE_KEY_V2 = "ikea-wishlist-item-status";

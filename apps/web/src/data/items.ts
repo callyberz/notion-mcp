@@ -1,20 +1,6 @@
-export interface WishlistItem {
-  id: string;
-  name: string;
-  url?: string;
-  price?: number;
-  notes?: string[];
-  isPreferred?: boolean;
-  imageUrl?: string;
-}
+import type { WishlistItem, Category } from "@wishlist/shared";
 
-export interface Category {
-  id: string;
-  name: string;
-  icon: string;
-  purchaseDeadline?: string;
-  items: WishlistItem[];
-}
+export type { WishlistItem, Category };
 
 export const categories: Category[] = [
   {

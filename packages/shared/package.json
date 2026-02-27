@@ -1,0 +1,12 @@
+{
+  "name": "@wishlist/shared",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/types.ts",
+      "default": "./src/types.ts"
+    }
+  }
+}

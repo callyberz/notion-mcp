@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@wishlist/shared": "workspace:*",
     "@tailwindcss/vite": "^4.2.0",
     "canvas-confetti": "^1.9.4",
     "class-variance-authority": "^0.7.1",
