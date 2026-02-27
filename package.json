@@ -1,6 +1,7 @@
 {
   "name": "ikea-wishlist",
   "private": true,
+  "type": "module",
   "packageManager": "pnpm@9.15.1",
   "dependencies": {
     "hono": "^4.7.0",
