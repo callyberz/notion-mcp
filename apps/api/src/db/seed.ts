@@ -1,22 +1,29 @@
-export interface WishlistItem {
+import "dotenv/config";
+import { db } from "./client.js";
+import {
+  categories as categoriesTable,
+  items as itemsTable,
+} from "./schema.js";
+
+interface SeedItem {
   id: string;
   name: string;
-  url?: string;
-  price?: number;
-  notes?: string[];
+  url: string;
+  price: number;
+  imageUrl: string;
   isPreferred?: boolean;
-  imageUrl?: string;
+  notes?: string[];
 }
 
-export interface Category {
+interface SeedCategory {
   id: string;
   name: string;
   icon: string;
   purchaseDeadline?: string;
-  items: WishlistItem[];
+  items: SeedItem[];
 }
 
-export const categories: Category[] = [
+const seedData: SeedCategory[] = [
   {
     id: "washroom",
     name: "Washroom Corner Shelf",
@@ -277,3 +284,43 @@ export const categories: Category[] = [
     ],
   },
 ];
+
+async function seed() {
+  console.log("Seeding database...");
+
+  for (let i = 0; i < seedData.length; i++) {
+    const cat = seedData[i];
+    await db
+      .insert(categoriesTable)
+      .values({
+        id: cat.id,
+        name: cat.name,
+        icon: cat.icon,
+        purchaseDeadline: cat.purchaseDeadline ?? null,
+        sortOrder: i,
+      })
+      .onConflictDoNothing();
+
+    for (let j = 0; j < cat.items.length; j++) {
+      const item = cat.items[j];
+      await db
+        .insert(itemsTable)
+        .values({
+          id: item.id,
+          categoryId: cat.id,
+          name: item.name,
+          url: item.url ?? null,
+          price: item.price ?? null,
+          imageUrl: item.imageUrl ?? null,
+          isPreferred: item.isPreferred ? 1 : 0,
+          notes: item.notes ? JSON.stringify(item.notes) : null,
+          sortOrder: j,
+        })
+        .onConflictDoNothing();
+    }
+  }
+
+  console.log("Seed complete.");
+}
+
+seed().catch(console.error);
