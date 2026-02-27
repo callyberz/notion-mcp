@@ -1,0 +1,26 @@
+{
+  "name": "@wishlist/api",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/dev.ts",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "tsx src/db/migrate.ts",
+    "db:seed": "tsx src/db/seed.ts"
+  },
+  "dependencies": {
+    "@libsql/client": "^0.14.0",
+    "drizzle-orm": "^0.38.0",
+    "hono": "^4.7.0",
+    "@wishlist/shared": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.13",
+    "@hono/node-server": "^1.13.0",
+    "drizzle-kit": "^0.30.0",
+    "dotenv": "^16.4.0",
+    "tsx": "^4.19.0",
+    "typescript": "~5.9.3"
+  }
+}
