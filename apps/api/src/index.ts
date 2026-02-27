@@ -9,6 +9,13 @@ const app = new Hono().basePath("/api");
 
 app.use("*", cors());
 
+app.onError((err, c) => {
+  console.error(err);
+  return c.json({ error: err.message }, 500);
+});
+
+app.get("/health", (c) => c.json({ ok: true }));
+
 app.route("/categories", categoriesRoute);
 app.route("/items", itemsRoute);
 
