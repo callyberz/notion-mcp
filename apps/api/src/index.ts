@@ -5,7 +5,7 @@ import { itemStatuses } from "./db/schema.js";
 import categoriesRoute from "./routes/categories.js";
 import itemsRoute from "./routes/items.js";
 
-const app = new Hono().basePath("/api");
+const app = new Hono();
 
 app.use("*", cors());
 
@@ -19,7 +19,7 @@ app.get("/health", (c) => c.json({ ok: true }));
 app.route("/categories", categoriesRoute);
 app.route("/items", itemsRoute);
 
-// POST /api/reset — clear all statuses
+// POST /reset — clear all statuses
 app.post("/reset", async (c) => {
   await db.delete(itemStatuses);
   return c.json({ ok: true });
