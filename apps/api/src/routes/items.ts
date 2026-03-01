@@ -2,6 +2,7 @@ import { Hono } from "hono";
 import { eq } from "drizzle-orm";
 import { db } from "../db/client.js";
 import { items, itemStatuses } from "../db/schema.js";
+import { scrapeOgImage } from "../lib/scrape-image.js";
 
 const app = new Hono();
 
@@ -13,13 +14,18 @@ app.post("/", async (c) => {
     .from(items)
     .where(eq(items.categoryId, body.categoryId));
 
+  let imageUrl = body.imageUrl ?? null;
+  if (body.url && !imageUrl) {
+    imageUrl = await scrapeOgImage(body.url);
+  }
+
   await db.insert(items).values({
     id: body.id,
     categoryId: body.categoryId,
     name: body.name,
     url: body.url ?? null,
     price: body.price ?? null,
-    imageUrl: body.imageUrl ?? null,
+    imageUrl,
     isPreferred: body.isPreferred ? 1 : 0,
     notes: body.notes ? JSON.stringify(body.notes) : null,
     sortOrder: existing.length,
