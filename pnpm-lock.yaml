@@ -7,23 +7,10 @@ settings:
 importers:
 
   .:
-    dependencies:
-      '@libsql/client':
-        specifier: ^0.14.0
-        version: 0.14.0
-      drizzle-orm:
-        specifier: ^0.38.0
-        version: 0.38.4(@libsql/client@0.14.0)(@types/react@19.2.14)(react@19.2.4)
-      hono:
-        specifier: ^4.7.0
-        version: 4.12.3
     devDependencies:
       '@types/node':
         specifier: ^24.10.13
         version: 24.10.15
-      esbuild:
-        specifier: ^0.27.3
-        version: 0.27.3
       typescript:
         specifier: ~5.9.3
         version: 5.9.3
