@@ -1,6 +1,0 @@
-{
-  "installCommand": "pnpm install",
-  "buildCommand": "node scripts/build-api.mjs && pnpm --filter @wishlist/web build",
-  "outputDirectory": "apps/web/dist",
-  "rewrites": [{ "source": "/api/(.*)", "destination": "/api" }]
-}
