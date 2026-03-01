@@ -12,8 +12,7 @@
   "dependencies": {
     "@libsql/client": "^0.14.0",
     "drizzle-orm": "^0.38.0",
-    "hono": "^4.7.0",
-    "@wishlist/shared": "workspace:*"
+    "hono": "^4.7.0"
   },
   "devDependencies": {
     "@types/node": "^24.10.13",
